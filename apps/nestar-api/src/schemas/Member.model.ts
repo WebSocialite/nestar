@@ -25,12 +25,12 @@ const MemberSchema = new Schema({
     memberPhone: {
         type: String,
         index: { unique: true, sparse: true},
-        required: true
+        required: true,
     },
     memberPassword: {
         type: String,
         select: false,
-        required: true
+        required: true,
     },
     memberFullName: {
         type: String
@@ -43,6 +43,7 @@ const MemberSchema = new Schema({
     },
     memberImage: {
         type: String,
+        default: '',
     },
     memberProperties: {
         type: Number,

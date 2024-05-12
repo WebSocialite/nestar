@@ -29,8 +29,8 @@ export class Member {
     @Field(() => String, {nullable: true})
     memberFullName?: string;
 
-     // @Field(() => String, {nullable: true})
-    // memberImage: string;
+     @Field(() => String,)
+    memberImage: string;
     
     @Field(() => String, {nullable: true})
     memberAddress?: string;

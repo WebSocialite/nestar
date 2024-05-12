@@ -20,7 +20,8 @@ import { T } from './libs/types/common';
       formatError: (error: T ) => {
         const graphQLFormattedError = {
           code: error?.extentions.code,
-          message: error?.extentions?.exception?.response?.message || error?.extentions?.response?.message || error?.message,
+          message: 
+          error?.extentions?.exception?.response?.message || error?.extentions?.response?.message || error?.message, //!! SHU YERDA ERROR HANDLER YAXSHI ISHLAMAYAPTI !!!!
         };
         console.log("GRAPHQL GLOBAL ERR :", graphQLFormattedError);
         return graphQLFormattedError;

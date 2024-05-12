@@ -7,16 +7,16 @@ import { MemberAuthType, MemberType } from "../../enums/member.enum";
 @InputType()
 export class MemberInput {
     @IsNotEmpty()
-    @Length(3, 12)
+    @Length(3, 12)   // minumim 3 letter till 12 letter is allowed (logic)
     @Field(() => String)
     memberNick: string;
 
     @IsNotEmpty()
-    @Length(5, 12)
+    @Length(5, 12)  // minimum 5 letter till 12 letter is allowed (logic)
     @Field(() => String)
     memberPassword: string;
 
-    @IsNotEmpty()
+    @IsNotEmpty() // equals to Required
     @Field(() => String)
     memberPhone: string;
 
