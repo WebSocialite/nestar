@@ -95,7 +95,7 @@ const MemberSchema = new Schema({
         type: Date,
     }
 },
-{timestamps: true, collection: "members"},
+{timestamps: true, collection: 'members'},
 );
 
 export default MemberSchema;

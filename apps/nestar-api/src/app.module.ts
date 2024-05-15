@@ -1,34 +1,31 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver } from '@nestjs/apollo';
+import { ConfigModule } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { ApolloDriver } from "@nestjs/apollo";
 import { AppResolver } from './app.resolver';
 import { ComponentsModule } from './components/components.module';
 import { DatabaseModule } from './database/database.module';
 import { T } from './libs/types/common';
 
-@Module({
+@Module({ //GRAPH QL API BACKEND SERVERINI TASHKIL QILYAPMIZ!!!!!
   imports: [
-    ConfigModule.forRoot(), 
-    GraphQLModule.forRoot({
+    ConfigModule.forRoot(), // envorimental variablelarni oqish imkoniyatinin beradi
+    GraphQLModule.forRoot({ // graphQL ni yasavolayapmiz
       driver: ApolloDriver,
       playground: true,
       uploads: false,
       autoSchemaFile: true,
-      formatError: (error: T ) => {
+      formatError: (error: T) => {
         const graphQLFormattedError = {
-          code: error?.extentions.code,
-          message: 
-          error?.extentions?.exception?.response?.message || error?.extentions?.response?.message || error?.message, //!! SHU YERDA ERROR HANDLER YAXSHI ISHLAMAYAPTI !!!!
+          code: error?.extensions.code,
+          message: error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message, 
         };
-        console.log("GRAPHQL GLOBAL ERR :", graphQLFormattedError);
+        console.log("GRAPHQL GLOBAL ERR", graphQLFormattedError);
         return graphQLFormattedError;
       },
-    }), 
-    ComponentsModule, 
-    DatabaseModule
+    }), ComponentsModule, DatabaseModule
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
