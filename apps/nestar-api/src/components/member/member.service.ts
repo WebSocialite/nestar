@@ -7,6 +7,7 @@ import { MemberStatus } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { MemberUpdate } from '../../libs/dto/member/member.update';
+import { T } from '../../libs/types/common';
 
 @Injectable()
 export class MemberService {
@@ -59,10 +60,18 @@ export class MemberService {
     return result;
  }
 
- public async getMember(): Promise<string> {
-  return 'getMember executed!';
+ public async getMember(targerId: ObjectId): Promise<Member> {
+    const search: T = {
+        _id: targerId,
+        memberStatus: {
+            $in: [MemberStatus.ACTIVE, MemberStatus.BLOCK],
+        },
+    };
+    const targerMember = await this.memberModel.findOne(search).exec();
+    if(!targerMember) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+  return targerMember;
  }
-
+ 
  public async getAllMembersByAdmin(): Promise<string> {
     return 'getAllMembersByAdmin executed!';
    }
