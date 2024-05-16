@@ -84,4 +84,19 @@ export class Member {
     accessToken?: string;
 
 }
+
+@ObjectType()
+export class TotalCounter {
+    @Field(() => Int, { nullable: true})
+    total: number;
+}
+
+@ObjectType()   // javob qaytaroyotganligi uchun OBJECT TYPE deb belgilar ekanmiz
+export class Members {
+    @Field(() => [Member])
+    list: Member[];
+
+    @Field(() => [TotalCounter], { nullable: true }) 
+    metaCounter: TotalCounter[];
+}
  
