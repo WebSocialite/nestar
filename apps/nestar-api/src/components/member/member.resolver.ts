@@ -54,7 +54,8 @@ export class MemberResolver {
     @Mutation(() => Member)
     public async updateMember(
         @Args("input") input: MemberUpdate,
-        @AuthMember("_id") memberId: ObjectId ): Promise<Member> { // @AuthMember = Custom decorator
+        @AuthMember("_id") memberId: ObjectId 
+    ): Promise<Member> { // @AuthMember = Custom decorator
         console.log("Mutation: updateMember");
         delete input._id;
         return await this.memberService.updateMember(memberId, input);
