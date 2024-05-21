@@ -43,7 +43,7 @@ export class MemberResolver {
 
     @Roles(MemberType.USER, MemberType.AGENT)
     @UseGuards(RolesGuard) 
-      @Query(() => String)
+    @Query(() => String)
     public async checkAuthRoles(@AuthMember() authMember: Member ): Promise<string> { // @AuthMember = Custom decorator
         console.log("Query: checkAuthRoles");
         return `Hi ${authMember.memberNick}, you are ${authMember.memberType}(memberId: ${authMember._id})`;
@@ -52,8 +52,9 @@ export class MemberResolver {
     // Authenticated user agent admin can update
     @UseGuards(AuthGuard) 
     @Mutation(() => Member)
-    public async updateMember(@Args("input") input: MemberUpdate,
-    @AuthMember("_id") memberId: ObjectId ): Promise<Member> { // @AuthMember = Custom decorator
+    public async updateMember(
+        @Args("input") input: MemberUpdate,
+        @AuthMember("_id") memberId: ObjectId ): Promise<Member> { // @AuthMember = Custom decorator
         console.log("Mutation: updateMember");
         delete input._id;
         return await this.memberService.updateMember(memberId, input);
