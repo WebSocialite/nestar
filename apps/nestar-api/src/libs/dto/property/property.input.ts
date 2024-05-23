@@ -205,8 +205,8 @@ export class PropertyInput {
 
  @InputType()
     class ALPISearch {
-    @IsOptional()
-    @Field(() => PropertyStatus, { nullable: true })
+    @IsOptional() 
+    @Field(() => PropertyStatus, { nullable: true })  //SOLD/ACTIVE/DELETE hammasini ADMIN koraoladigan qildik
     propertyStatus?: PropertyStatus;
    
     @IsOptional()

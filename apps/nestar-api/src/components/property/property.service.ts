@@ -241,10 +241,10 @@ export class PropertyService {
     }
 
     public async removePropertyByAdmin (propertyId: ObjectId): Promise<Property> {
-        const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE };
+        const search: T = { _id: propertyId, propertyStatus: PropertyStatus.DELETE }; //faqat deleted bulgan holdagina remove qilsa buladi, yani active yoki sold bulsa remove qilib bolmaydi
         const result = await this.propertyModel.findOneAndDelete(search).exec();
         if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
-        
+
         return result;
 }
 }
