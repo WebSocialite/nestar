@@ -96,7 +96,7 @@ export class BoardArticleResolver {
      @Args('input') input: BoardArticleUpdate,
      @AuthMember('_id') memberId: ObjectId,
  ) :Promise<BoardArticle> {
-     console.log("Query: updateBoardArticleByAdmin");
+     console.log("Mutation: updateBoardArticleByAdmin");
      input._id = shapeIntoMongoObjectId(input._id);
      return await this.boardArticleService.updateBoardArticleByAdmin(input);
 }
@@ -108,7 +108,7 @@ export class BoardArticleResolver {
      @Args('input') input: string,
      @AuthMember('_id') memberId: ObjectId,
  ) :Promise<BoardArticle> {
-     console.log("Query: removeBoardArticleByAdmin");
+     console.log("Mutation: removeBoardArticleByAdmin");
      const articleId = shapeIntoMongoObjectId(input);
      return await this.boardArticleService.removeBoardArticleByAdmin(articleId);
 }

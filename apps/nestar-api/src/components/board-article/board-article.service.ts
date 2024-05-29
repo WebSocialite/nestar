@@ -197,7 +197,9 @@ export class BoardArticleService {
 
     public async removeBoardArticleByAdmin (articleId: ObjectId): Promise<BoardArticle> {
         const search: T = { _id: articleId, articleStatus: BoardArticleStatus.DELETE }; //faqat deleted bulgan holdagina remove qilsa buladi, yani active yoki sold bulsa remove qilib bolmaydi
-        const result = await this.boardArticleModel.findOneAndDelete(search).exec();
+        const result = await this.boardArticleModel
+        .findOneAndDelete(search)
+        .exec();
         if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 
         return result;
@@ -205,7 +207,8 @@ export class BoardArticleService {
 
     public async boardArticleStatsEditor( input: StatisticModifier): Promise<BoardArticle> {
         const { _id, targetKey, modifier } = input;
-        return await this.boardArticleModel.findByIdAndUpdate(
+        return await this.boardArticleModel
+        .findByIdAndUpdate(
             _id,
             {$inc: { [targetKey]: modifier } },
             { new: true, },
