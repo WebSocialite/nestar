@@ -53,7 +53,7 @@ export class PropertyResolver {
     }
 
     @UseGuards(WithoutGuard)
-    @Query((returns) => Properties)
+    @Query((returns) => Properties)   // property me liked ni faqat userlar qila oladi agentlar qilsa bolmaydi
     public async getProperties(
         @Args('input') input: PropertiesInquiry,
         @AuthMember('_id') memberId: ObjectId,
