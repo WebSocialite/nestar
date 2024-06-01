@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { PropertyService } from './property.service';
 import { Properties, Property } from '../../libs/dto/property/property';
-import { AgentPropertiesInquiry, AllPropertiesInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { AgentPropertiesInquiry, AllPropertiesInquiry, OrdinaryInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { UseGuards } from '@nestjs/common';
@@ -61,6 +61,28 @@ export class PropertyResolver {
         console.log('Query: getProperties');
         return await this.propertyService.getProperties(memberId, input);
     }
+
+    @UseGuards(AuthGuard)
+    @Query((returns) => Properties)   
+    public async getFavorites(
+        @Args('input') input: OrdinaryInquiry, // backendga kirib kelishga qadar bulgan validationni qabul qladi
+        @AuthMember('_id') memberId: ObjectId,  // Authmember param decoratorida memberId ni hosil qilyapmiz
+    ): Promise<Properties> {
+        console.log('Query: getFavorites');
+        return await this.propertyService.getFavorites(memberId, input);
+    }
+
+
+    @UseGuards(AuthGuard)
+    @Query((returns) => Properties)   
+    public async getVisited(
+        @Args('input') input: OrdinaryInquiry, // backendga kirib kelishga qadar bulgan validationni qabul qladi
+        @AuthMember('_id') memberId: ObjectId,  // Authmember param decoratorida memberId ni hosil qilyapmiz
+    ): Promise<Properties> {
+        console.log('Query: getVisited');
+        return await this.propertyService.getVisited(memberId, input);
+    }
+
 
     @Roles(MemberType.AGENT)
     @UseGuards(RolesGuard)
