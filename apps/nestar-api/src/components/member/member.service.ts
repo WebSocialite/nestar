@@ -28,7 +28,9 @@ export class MemberService {
 ) {}
 
  public async signup(input: MemberInput): Promise<Member> {
+    console.log("signup", input);
     input.memberPassword = await this.authService.hashPassword(input.memberPassword);
+    console.log('Hashed password:', input.memberPassword);
   try {
    const result = await this.memberModel.create(input);
     result.accessToken = await this.authService.createToken(result);
@@ -45,6 +47,7 @@ export class MemberService {
    .findOne({ memberNick: memberNick })
    .select('+memberPassword')
    .exec();
+   console.log('Member found:', response);
 
   if (!response || response.memberStatus === MemberStatus.DELETE) {
    throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
@@ -53,8 +56,10 @@ export class MemberService {
   }
 
   const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
+  console.log('Password match:', isMatch);
   if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
   response.accessToken = await this.authService.createToken(response);
+  console.log('Access token created:', response.accessToken);
   return response;
  }
 
@@ -67,6 +72,7 @@ export class MemberService {
     { new: true },
     )
     .exec();
+    console.log('Member updated:', result);
     if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 
     result.accessToken = await this.authService.createToken(result);
@@ -74,6 +80,7 @@ export class MemberService {
  }
 
  public async getMember(memberId: ObjectId, targetId: ObjectId): Promise<Member> {
+    console.log('GetMember memberId:', memberId, 'targetId:', targetId);
     const search: T = {
         _id: targetId,
         memberStatus: {
@@ -94,6 +101,7 @@ export class MemberService {
     //me liked
         const likeInput = {memberId: memberId, likeRefId: targetId, likeGroup: LikeGroup.MEMBER};
         targetMember.meLiked = await this.likeService.checkLikeExistence(likeInput);
+        console.log('Like checked:', targetMember.meLiked);
     
         targetMember.meFollowed = await this.checkSubscription(memberId, targetId);
 
