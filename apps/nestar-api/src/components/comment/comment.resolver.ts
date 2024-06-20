@@ -42,7 +42,7 @@ export class CommentResolver {
     @UseGuards(WithoutGuard)
     @Query((returns) => Comments)
     public async getComments(
-        @Args('articleId') input: CommentsInquiry,
+        @Args('input') input: CommentsInquiry,
         @AuthMember('_id') memberId: ObjectId,
     ) :Promise<Comments> {
         console.log("Query: getComments");
