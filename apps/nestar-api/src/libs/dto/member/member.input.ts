@@ -98,13 +98,15 @@ class MISearch {
 
 @InputType()
 export class MembersInquiry {
-    @IsNotEmpty()
+    // @IsNotEmpty()
+    @IsOptional()
     @Min(1)
     @Field(() => Int)
     page: number;
 
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
+    @IsOptional()
     @Min(1)
     @Field(() => Int)
     limit: number;
