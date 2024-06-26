@@ -2,7 +2,9 @@ import { Logger } from '@nestjs/common';
 import { OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'ws';
 import * as WebSocket from "ws";
-
+import { AuthService } from '../components/auth/auth.service';
+import { Member } from '../libs/dto/member/member';
+import * as url from 'url';
 
 interface MessagePayload {
   event: string;
@@ -19,6 +21,8 @@ export class SocketGateway implements OnGatewayInit {
   private logger: Logger = new Logger('SocketEventsGateway');
   private summaryClient: number = 0;
 
+
+  constructor( private authService: AuthService) {}
   @WebSocketServer()
   server: Server;
 
@@ -26,8 +30,21 @@ export class SocketGateway implements OnGatewayInit {
   public afterInit(server: Server) {
     this.logger.verbose(`WebSocket Server Initialized & total: [${this.summaryClient}]`);
   }
+  private async retrieveAuth(req: any): Promise<Member> {
+    try {
+      const parseUrl = url.parse(req.url, true);
+      const {token} = parseUrl.query;
+      return await this.authService.verifyToken(token as string);
+    } catch (err) {
+      return null;
+    }
+  }
+  
+  public async handleConnection(client: WebSocket, req: any) {
+    const authMember = await this.retrieveAuth(req);
+    console.log("authMember", authMember);
+    // client => authMember 
 
-  handleConnection(client: WebSocket, ...args: any[]) {
     this.summaryClient++;
     this.logger.verbose(`Connection & total: [${this.summaryClient}]`);
 
@@ -38,7 +55,7 @@ export class SocketGateway implements OnGatewayInit {
     this.emitMessage(infoMsg);
   }
 
-  handleDisconnect(client: WebSocket) {
+  public async handleDisconnect(client: WebSocket) {
     this.summaryClient--;
     this.logger.verbose(`Disconnection & total: [${this.summaryClient}]`);
 
