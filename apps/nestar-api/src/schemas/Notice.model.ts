@@ -15,10 +15,10 @@ const NoticeSchema = new Schema(
 			default: NoticeStatus.ACTIVE,
 		},
 
-		noticeTitle: {
-			type: String,
-			required: true,
-		},
+		// noticeTitle: {
+		// 	type: String,
+		// 	required: true,
+		// },
 
 		noticeContent: {
 			type: String,

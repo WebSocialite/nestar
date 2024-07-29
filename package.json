@@ -1,10 +1,10 @@
 {
-	"name": "nestar",
+	"name": "nestar2",
 	"version": "0.0.1",
 	"description": "",
-	"author": "",
+	"author": "bob",
 	"private": true,
-	"license": "UNLICENSED",
+	"license": "ITC",
 	"scripts": {
 		"build": "nest build",
 		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
