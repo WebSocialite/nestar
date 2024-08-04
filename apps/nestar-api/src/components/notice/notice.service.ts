@@ -11,70 +11,77 @@ import { Comments, Comment } from '../../libs/dto/comment/comment';
 import { CommentUpdate } from '../../libs/dto/comment/comment.update';
 import { T } from '../../libs/types/common';
 import { lookupMember } from '../../libs/config';
-import { Notice } from '../../libs/dto/cs/notice';
-import { NoticeCategory } from '../../libs/enums/notice.enum';
-import { NoticeInput } from '../../libs/dto/cs/notice.input';
+import { Notice, Notices } from '../../libs/dto/cs/notice';
+import { NoticeStatus } from '../../libs/enums/notice.enum';
+import { NoticeInput, NoticesInquiry } from '../../libs/dto/cs/notice.input';
+import { NoticeUpdate } from '../../libs/dto/cs/notice.update';
 
 @Injectable()
 export class NoticeService {
     constructor(@InjectModel('Notice') private readonly noticeModel: Model<Notice>,
-    private memberService: MemberService,
-    private propertyService: PropertyService,
-    private boardArticleService: BoardArticleService,
+    // private memberService: MemberService,
+    // private propertyService: PropertyService,
+    // private boardArticleService: BoardArticleService,
 ) {}
 
-public async createNoticeByAdmin(input: NoticeInput): Promise<Notice> {
+public async createNoticeByAdmin(memberId: ObjectId, input: NoticeInput): Promise<Notice> {
+   //input.memberId = memberId;
+     console.log("Input before saving:", input);
+     let result = null;
     try {
-        const result = await this.noticeModel.create(input);
-        // increase memberProperties +1
-        await this.memberService.memberStatsEditor({ 
-            _id: result.memberId, 
-            targetKey: 'memberNotices', 
-            modifier: 1,
-        })
-        return result;
+        result = await this.noticeModel.create(input); 
+        console.log("Created Notice:", result); 
+        // await this.memberService.memberStatsEditor({ 
+        //     _id: input.noticeRefId, 
+        //     targetKey: 'memberNotices', 
+        //     modifier: 1,
+        // });
     } catch (err) {
         console.log("Error, Service.model:", err.message);
         throw new BadRequestException(Message.CREATE_FAILED);
     }
+    if(!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
+    return result;
 }
-//     public async updateComment (memberId: ObjectId, input: CommentUpdate): Promise<Comment> {
+//     public async updateNoticeByAdmin (input: NoticeUpdate): Promise<Notice> {
 //         const { _id } = input;
     
-//         const result = await this.commentModel
-//         .findOneAndUpdate({ _id: _id, memberId: memberId, commentStatus: CommentStatus.ACTIVE }, input, {
+//         const result = await this.noticeModel
+//         .findOneAndUpdate({ _id: _id,  noticeStatus: NoticeStatus.ACTIVE }, input, {
 //             new: true,
 //         },).exec();
 //         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
 //             return result;
 //         }
 
-
-//     public async getComments(memberId: ObjectId, input: CommentsInquiry): Promise<Comments> {
-//         const { commentRefId } = input.search;
-//         const match: T = { commentRefId: commentRefId, commentStatus: CommentStatus.ACTIVE };
-//         const sort: T = { [input?.sort ?? 'createdAt' ]: input?.direction ?? Direction.DESC };
-
-//         const result: Comments[] = await this.commentModel
-//         .aggregate([
-//             { $match: match },
-//             { $sort: sort },
-//             { $facet: {
-//                 list: [{ $skip: (input.page -1) * input.limit}, { $limit: input.limit },
-//                     lookupMember,
-//                     { $unwind: '$memberData' },
-//                 ],
-//                 metaCounter: [{ $count: "total" }],
-//              }, 
-//             },
-//         ]).exec();
-//         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-//         return result[0];
-//     }
-
-//     public async removeCommentByAdmin (input: ObjectId): Promise<Comment> {
-//         const result = await this.commentModel.findByIdAndDelete(input).exec();
+//     public async removeNoticeByAdmin (input: ObjectId): Promise<Notice> {
+//         const result = await this.noticeModel.findOneAndDelete(input).exec();
 //         if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
 //         return result;
 // }
+
+// public async getNotices(memberId: ObjectId, input: NoticesInquiry): Promise<Notices> {
+//     const { noticeRefId } = input.search;
+//     const match: T = { noticeRefId: noticeRefId, noticeStatus: NoticeStatus.ACTIVE };
+//     const sort: T = { [input?.sort ?? 'createdAt' ]: input?.direction ?? Direction.DESC };
+
+//     const result: Notices[] = await this.noticeModel
+//     .aggregate([
+//         { $match: match },
+//         { $sort: sort },
+//         { $facet: {
+//             list: [{ $skip: (input.page -1) * input.limit}, { $limit: input.limit },
+//                 lookupMember,
+//                 { $unwind: '$memberData' },
+//             ],
+//             metaCounter: [{ $count: "total" }],
+//          }, 
+//         },
+//     ]).exec();
+//     if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+//     return result[0];
+// }
+
+
+
 }
