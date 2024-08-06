@@ -1,6 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { NoticeStatus } from '../../enums/notice.enum';
+import { NoticeGroup, NoticeStatus } from '../../enums/notice.enum';
 import { Member, TotalCounter } from '../member/member';
 
 @ObjectType()
@@ -11,11 +11,14 @@ export class Notice {
 	@Field(() => NoticeStatus)
 	noticeStatus: NoticeStatus;
 
+	@Field(() => NoticeGroup)
+	noticeGroup: NoticeGroup;
+
 	@Field(() => String)
 	noticeContent: string;
 
-	// @Field(() => String)
-	// noticeRefId: ObjectId;
+	@Field(() => String)
+	noticeRefId: ObjectId;
 
 	@Field(() => String)
 	memberId: ObjectId;
@@ -34,8 +37,8 @@ export class Notice {
 
 @ObjectType()
 export class Notices {
-	@Field(() => [Notices])
-	list: Notices[];
+	@Field(() => [Notice])
+	list: Notice[];
 
 	@Field(() => [TotalCounter], { nullable: true })
 	metaCounter: TotalCounter[];

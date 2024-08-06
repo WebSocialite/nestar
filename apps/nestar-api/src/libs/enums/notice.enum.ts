@@ -1,12 +1,11 @@
 import { registerEnumType } from '@nestjs/graphql';
 
-export enum NoticeCategory {
+export enum NoticeGroup {
 	FAQ = 'FAQ',
-	TERMS = 'TERMS',
-	INQUIRY = 'INQUIRY',
+	NOTICE = 'NOTICE'
 }
-registerEnumType(NoticeCategory, {
-	name: 'NoticeCategory',
+registerEnumType(NoticeGroup, {
+	name: 'NoticeGroup',
 });
 
 export enum NoticeStatus {

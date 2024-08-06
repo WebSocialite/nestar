@@ -7,7 +7,7 @@ import { LikeModule } from './like/like.module';
 import { ViewModule } from './view/view.module';
 import { FollowModule } from './follow/follow.module';
 import { BoardArticleModule } from './board-article/board-article.module';
-import { NoticeModule } from './notice/notice.module';
+//import { NoticeModule } from './notice/notice.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { NoticeModule } from './notice/notice.module';
     LikeModule, 
     ViewModule, 
     FollowModule,
-    NoticeModule
+  //  NoticeModule
   ]
 })
 export class ComponentsModule {}
