@@ -1,71 +1,80 @@
-// import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-// import { NoticeService } from './notice.service';
-// import { AuthGuard } from '../auth/guards/auth.guard';
-// import { UseGuards } from '@nestjs/common';
-// import { CommentInput, CommentsInquiry } from '../../libs/dto/comment/comment.input';
-// import { ObjectId } from 'mongoose';
-// import { AuthMember } from '../auth/decorators/authMember.decorator';
-// import { Comments, Comment } from '../../libs/dto/comment/comment';
-// import { CommentUpdate } from '../../libs/dto/comment/comment.update';
-// import { shapeIntoMongoObjectId } from '../../libs/config';
-// import { WithoutGuard } from '../auth/guards/without.guard';
-// import { Roles } from '../auth/decorators/roles.decorator';
-// import { MemberType } from '../../libs/enums/member.enum';
-// import { RolesGuard } from '../auth/guards/roles.guard';
-// import { Notice } from '../../libs/dto/cs/notice';
-// import { NoticeInput } from '../../libs/dto/cs/notice.input';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { NoticeService } from './notice.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { MemberType } from '../../libs/enums/member.enum';
+import { UseGuards } from '@nestjs/common';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { NoticeInputDto, NoticeInquiryDto } from '../../libs/dto/notice/notice.input';
+import { AuthMember } from '../auth/decorators/authMember.decorator';
+import { ObjectId } from 'mongoose';
+import { NoticeDto, NoticesDto } from '../../libs/dto/notice/notice';
+import { NoticeUpdateDto } from '../../libs/dto/notice/notice.update';
+import { shapeIntoMongoObjectId } from '../../libs/config';
+import { WithoutGuard } from '../auth/guards/without.guard';
 
-// @Resolver()
-// export class NoticeResolver {
-//     constructor(private readonly noticeService: NoticeService) {}
+@Resolver()
+export class NoticeResolver {
+	constructor(private readonly noticeService: NoticeService) {}
 
-//     @Roles(MemberType.ADMIN)
-//     @UseGuards(RolesGuard)
-//     @Mutation(() => Notice)
-//     public async createNoticeByAdmin(
-//         @Args('input') input: NoticeInput, 
-//         @AuthMember("_id") memberId: ObjectId
-//     ): Promise<Notice> {
-//         console.log("Mutation: createNotice");
-//         input.memberId = memberId;
-//         return await this.noticeService.createNoticeByAdmin(input);
-//     }
+	/** ADMIN **/
+	@Roles(MemberType.ADMIN, MemberType.AGENT)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => NoticeDto)
+	public async createNotice(
+		@Args('input') input: NoticeInputDto,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<NoticeDto> {
+		console.log('Mutation: createNotice');
+		input.memberId = memberId;
+		const data = await this.noticeService.createNotice(input);
+		return data;
+	}
 
-// //  @UseGuards(AuthGuard)
-// //     @Mutation((returns) => Comment)
-// //     public async updateComment(
-// //         @Args('input') input: CommentUpdate,
-// //         @AuthMember('_id') memberId: ObjectId,
-// //     ) :Promise<Comment> {
-// //         console.log("Mutation: updateComment");
-// //         input._id = shapeIntoMongoObjectId(input._id);
-// //         return await this.commentService.updateComment(memberId, input);
-// //     }
+	@Roles(MemberType.ADMIN, MemberType.AGENT)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => NoticeDto)
+	public async updateNotice(
+		@Args('input') input: NoticeUpdateDto,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<NoticeDto> {
+		console.log('Mutation: updateNotice');
+		const data = await this.noticeService.updateNotice(memberId, input);
+		return data;
+	}
 
-// //     @UseGuards(WithoutGuard)
-// //     @Query((returns) => Comments)
-// //     public async getComments(
-// //         @Args('input') input: CommentsInquiry,
-// //         @AuthMember('_id') memberId: ObjectId,
-// //     ) :Promise<Comments> {
-// //         console.log("Query: getComments");
-// //         input.search.commentRefId = shapeIntoMongoObjectId(input.search.commentRefId);
-// //         return await this.commentService.getComments(memberId, input);
-// //     }
-   
+	@Roles(MemberType.ADMIN, MemberType.AGENT)
+	@UseGuards(RolesGuard)
+	@Mutation((returns) => NoticeDto)
+	public async deleteNotice(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<NoticeDto> {
+		console.log('Mutation: deleteNotice');
+		const noticeId = shapeIntoMongoObjectId(input);
+		const data = await this.noticeService.deleteNotice(noticeId);
+		return data;
+	}
 
-// //     //**      ADMIN        **/
+	/** CLIENT **/
 
-// //     @Roles(MemberType.ADMIN)
-// //     @UseGuards(RolesGuard)
-// //     @Mutation((returns) => Comment)
-// //     public async removeCommentByAdmin(
-// //         @Args('commentId') input: string,
-// //     ): Promise<Comment> {
-// //         console.log("Query: removeCommentByAdmin");
-// //         const commentId = shapeIntoMongoObjectId(input);
-// //         return await this.commentService.removeCommentByAdmin(commentId);
-// //    }
+	@UseGuards(WithoutGuard)
+	@Query((returns) => NoticeDto)
+	public async getNotice(@Args('input') input: string, @AuthMember('_id') memberId: ObjectId): Promise<NoticeDto> {
+		console.log('Query: getNotice');
+		const noticeId = shapeIntoMongoObjectId(input);
+		const data = this.noticeService.getNotice(noticeId);
 
+		return data;
+	}
 
-// }
+	@UseGuards(WithoutGuard)
+	@Query((returns) => NoticesDto)
+	public async getNotices(
+		@Args('input') input: NoticeInquiryDto,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<NoticesDto> {
+		console.log('Query: getNotices');
+		console.log(input, 'GET NOTICES');
+
+		const data = this.noticeService.getNotices(memberId, input);
+
+		return data;
+	}
+}

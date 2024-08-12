@@ -1,37 +1,32 @@
-import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsIn, IsNotEmpty, IsOptional, Length, Min } from 'class-validator';
+import { Field, InputType, Int, ObjectType } from '@nestjs/graphql';
 import { ObjectId } from 'mongoose';
-import { NoticeGroup } from '../../enums/notice.enum';
+import { CommentGroup, CommentStatus } from '../../enums/comment.enum';
+import { Member, TotalCounter } from '../member/member';
+import { FaqType } from '../../enums/faq.enum';
+import { IsNotEmpty, Min, IsOptional, IsIn, Length } from 'class-validator';
+import { availableCommentSorts, availableNoticeSorts, availablePropertySorts } from '../../config';
+import { NoticeStatus, NoticeType } from '../../enums/notice.enum';
 import { Direction } from '../../enums/common.enum';
-import { availableNoticeSorts } from '../../config';
 
 @InputType()
-export class NoticeInput {
+export class NoticeInputDto {
 	@IsNotEmpty()
-	@Field(() => NoticeGroup)
-	noticeGroup: NoticeGroup;
+	@Field(() => NoticeType)
+	noticeType: NoticeType;
 
 	@IsNotEmpty()
-	@Length(1, 100)
+	@Length(1, 300)
 	@Field(() => String)
 	noticeContent: string;
 
-	@IsNotEmpty()
-	@Field(() => String)
-	noticeRefId: ObjectId;
+	@Field(() => NoticeStatus, { nullable: true })
+	noticeStatus?: NoticeStatus;
 
 	memberId?: ObjectId;
 }
 
 @InputType()
-class NoticeSearch {
-	@IsNotEmpty()
-	@Field(() => String)
-	noticeRefId: ObjectId;
-}
-
-@InputType()
-export class NoticesInquiry {
+export class NoticeInquiryDto {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -43,15 +38,24 @@ export class NoticesInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn(availableNoticeSorts)  // createdAT updatedAT logic
+	@IsIn(availableNoticeSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
-	@IsOptional()
-	@Field(() => Direction, { nullable: true })
-	direction?: Direction;
+	// @IsOptional()
+	// @Field(() => Direction, { nullable: true })
+	// direction?: Direction;
 
-	@IsNotEmpty()
-	@Field(() => NoticeSearch)
-	search: NoticeSearch;
+	@IsOptional()
+	@IsIn(Object.values(NoticeType))
+	@Field(() => NoticeType, { nullable: true })
+	noticeType?: NoticeType;
+
+	@IsOptional()
+	@Field(() => NoticeStatus, { nullable: true })
+	noticeStatus?: NoticeStatus;
+
+	@IsOptional()
+	@Field(() => String, { nullable: true })
+	text?: string;
 }

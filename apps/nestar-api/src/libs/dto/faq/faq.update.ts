@@ -2,24 +2,29 @@ import { InputType, Field } from '@nestjs/graphql';
 import { IsNotEmpty, Length, IsOptional } from 'class-validator';
 import { ObjectId } from 'mongoose';
 import { BoardArticleCategory } from '../../enums/board-article.enum';
-import { NoticeStatus, NoticeType } from '../../enums/notice.enum';
+import { FaqStatus, FaqType } from '../../enums/faq.enum';
 
 @InputType()
-export class NoticeUpdateDto {
+export class FaqUpdateDto {
 	@IsNotEmpty()
 	@Field(() => String)
 	_id: ObjectId;
 
 	@IsOptional()
+	@Length(10, 50)
+	@Field(() => String, { nullable: true })
+	faqQuestion?: string;
+
+	@IsOptional()
 	@Length(10, 150)
 	@Field(() => String, { nullable: true })
-	noticeContent?: string;
+	faqAnswer?: string;
 
 	@IsOptional()
-	@Field(() => NoticeType, { nullable: true })
-	noticeType?: NoticeType;
+	@Field(() => FaqType, { nullable: true })
+	faqType?: FaqType;
 
 	@IsOptional()
-	@Field(() => NoticeStatus, { nullable: true })
-	noticeStatus?: NoticeStatus;
+	@Field(() => FaqStatus, { nullable: true })
+	faqStatus?: FaqStatus;
 }

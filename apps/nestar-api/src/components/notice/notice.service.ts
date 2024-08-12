@@ -1,80 +1,117 @@
-// import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model, ObjectId } from 'mongoose';
-// import { PropertyService } from '../property/property.service';
-// import { BoardArticleService } from '../board-article/board-article.service';
-// import { MemberService } from '../member/member.service';
-// import { CommentInput, CommentsInquiry } from '../../libs/dto/comment/comment.input';
-// import { Direction, Message } from '../../libs/enums/common.enum';
-// import { CommentGroup, CommentStatus } from '../../libs/enums/comment.enum';
-// import { Comments, Comment } from '../../libs/dto/comment/comment';
-// import { CommentUpdate } from '../../libs/dto/comment/comment.update';
-// import { T } from '../../libs/types/common';
-// import { lookupMember } from '../../libs/config';
-// import { Notice } from '../../libs/dto/cs/notice';
-// import { NoticeCategory } from '../../libs/enums/notice.enum';
-// import { NoticeInput } from '../../libs/dto/cs/notice.input';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { NoticeDto, NoticesDto } from '../../libs/dto/notice/notice';
+import { Model, ObjectId } from 'mongoose';
+import { NoticeInputDto, NoticeInquiryDto } from '../../libs/dto/notice/notice.input';
+import { Message } from '../../libs/enums/common.enum';
+import { NoticeUpdateDto } from '../../libs/dto/notice/notice.update';
+import { T } from '../../libs/types/common';
+import { MemberService } from '../member/member.service';
+import { NoticeStatus } from '../../libs/enums/notice.enum';
 
-// @Injectable()
-// export class NoticeService {
-//     constructor(@InjectModel('Notice') private readonly noticeModel: Model<Notice>,
-//     private memberService: MemberService,
-//     private propertyService: PropertyService,
-//     private boardArticleService: BoardArticleService,
-// ) {}
+@Injectable()
+export class NoticeService {
+	constructor(
+		@InjectModel('Notice') private readonly noticeModel: Model<NoticeDto>,
+		private memberService: MemberService,
+	) {}
 
-// public async createNoticeByAdmin(input: NoticeInput): Promise<Notice> {
-//     try {
-//         const result = await this.noticeModel.create(input);
-//         // increase memberProperties +1
-//         await this.memberService.memberStatsEditor({ 
-//             _id: result.memberId, 
-//             targetKey: 'memberNotices', 
-//             modifier: 1,
-//         })
-//         return result;
-//     } catch (err) {
-//         console.log("Error, Service.model:", err.message);
-//         throw new BadRequestException(Message.CREATE_FAILED);
-//     }
-// }
-// //     public async updateComment (memberId: ObjectId, input: CommentUpdate): Promise<Comment> {
-// //         const { _id } = input;
-    
-// //         const result = await this.commentModel
-// //         .findOneAndUpdate({ _id: _id, memberId: memberId, commentStatus: CommentStatus.ACTIVE }, input, {
-// //             new: true,
-// //         },).exec();
-// //         if(!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
-// //             return result;
-// //         }
+	public async createNotice(input: NoticeInputDto): Promise<NoticeDto> {
+		console.log(input, 'CREATE INPUT');
 
+		try {
+			const result: any = await this.noticeModel.create(input);
 
-// //     public async getComments(memberId: ObjectId, input: CommentsInquiry): Promise<Comments> {
-// //         const { commentRefId } = input.search;
-// //         const match: T = { commentRefId: commentRefId, commentStatus: CommentStatus.ACTIVE };
-// //         const sort: T = { [input?.sort ?? 'createdAt' ]: input?.direction ?? Direction.DESC };
+			// await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberNotices', modifier: 1 });
+			// if (!result) throw new InternalServerErrorException(Message.CREATE_FAILED);
 
-// //         const result: Comments[] = await this.commentModel
-// //         .aggregate([
-// //             { $match: match },
-// //             { $sort: sort },
-// //             { $facet: {
-// //                 list: [{ $skip: (input.page -1) * input.limit}, { $limit: input.limit },
-// //                     lookupMember,
-// //                     { $unwind: '$memberData' },
-// //                 ],
-// //                 metaCounter: [{ $count: "total" }],
-// //              }, 
-// //             },
-// //         ]).exec();
-// //         if(!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
-// //         return result[0];
-// //     }
+			return result;
+		} catch (error) {
+			console.log('Error, Service.model', error.message);
+			throw new BadRequestException(Message.CREATE_FAILED); // bu error nestjsni error handling methodi bolsa, demak bu yerda errorni handle qilsak u bizning global error handlingmizni error messagega joylashadimi?
+		}
+	}
 
-// //     public async removeCommentByAdmin (input: ObjectId): Promise<Comment> {
-// //         const result = await this.commentModel.findByIdAndDelete(input).exec();
-// //         if(!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
-// //         return result;
-// // }
-// }
+	public async updateNotice(memberId: ObjectId, input: NoticeUpdateDto): Promise<NoticeDto> {
+		console.log(input, 'NOTICE INPUT');
+
+		const result: NoticeDto = await this.noticeModel
+			.findOneAndUpdate({ _id: input._id, memberId: memberId }, input, {
+				new: true,
+			})
+			.exec();
+
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+
+		return result;
+	}
+
+	public async deleteNotice(noticeId: ObjectId): Promise<NoticeDto> {
+		const result: NoticeDto = await this.noticeModel.findOneAndDelete(noticeId).exec();
+
+		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
+
+		return result;
+	}
+
+	public async getNotice(noticeId: ObjectId): Promise<NoticeDto> {
+		const result: NoticeDto = await this.noticeModel.findOne(noticeId).exec();
+
+		if (!result) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		return result;
+	}
+
+	public async getNotices(memberId: ObjectId, input: NoticeInquiryDto): Promise<NoticesDto> {
+		const { noticeType, text, noticeStatus } = input;
+
+		console.log(input, 'GET NOTICES');
+
+		const match: T = {};
+		if (noticeType) {
+			match.noticeType = noticeType;
+		}
+
+		if (noticeStatus) {
+			match.noticeStatus = noticeStatus;
+		}
+
+		if (text) {
+			match.noticeContent = { $regex: new RegExp(text, 'i') };
+		}
+		console.log(match, 'MATCH');
+
+		const sort: T = { ['createdAt']: -1 };
+		const result = await this.noticeModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: sort },
+				{
+					$facet: {
+						list: [{ $skip: (input.page - 1) * input.limit }, { $limit: input.limit }],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		if (!result || !result[0]) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
+
+		const noticesResult = result[0];
+
+		const noticesDto: NoticesDto = {
+			list: noticesResult.list.map((item: NoticeDto) => ({
+				_id: item._id,
+				noticeContent: item.noticeContent,
+				noticeType: item.noticeType,
+				memberData: item.memberData,
+				noticeStatus: item.noticeStatus,
+				createdAt: item.createdAt,
+				updatedAt: item.updatedAt,
+			})),
+			metaCounter: noticesResult.metaCounter,
+		};
+
+		return noticesDto;
+	}
+}

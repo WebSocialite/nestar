@@ -7,6 +7,10 @@ import { AuthModule } from '../auth/auth.module';
 import { MemberModule } from '../member/member.module';
 import { PropertyModule } from '../property/property.module';
 import { BoardArticleModule } from '../board-article/board-article.module';
+import MemberSchema from '../../schemas/Member.model';
+import PropertySchema from '../../schemas/Property.model';
+import BoardArticleSchema from '../../schemas/BoardArticle.model';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -16,10 +20,30 @@ import { BoardArticleModule } from '../board-article/board-article.module';
         schema: CommentSchema,
       },
     ]),
+    MongooseModule.forFeature([
+			{
+				name: 'Member',
+				schema: MemberSchema,
+			},
+		]),
+		MongooseModule.forFeature([
+			{
+				name: 'Property',
+				schema: PropertySchema,
+			},
+		]),
+
+		MongooseModule.forFeature([
+			{
+				name: 'BoardArticle',
+				schema: BoardArticleSchema,
+			},
+		]),
      AuthModule,
      MemberModule,
      PropertyModule,
-     BoardArticleModule
+     BoardArticleModule,
+     NotificationModule,
     ],
 
   providers: [CommentResolver, CommentService],
