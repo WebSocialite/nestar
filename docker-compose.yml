@@ -10,7 +10,7 @@ services:
     working_dir: /usr/src/nestar
     networks:
       - monorepo-network
-    command: bash -c "rm -rf dist npm install && npm run build && npm run start:prod"
+    command: bash -c "rm -rf dist && npm install && npm run build && npm run start:prod"
 
   nestar-batch:
     container_name: nestar-batch
